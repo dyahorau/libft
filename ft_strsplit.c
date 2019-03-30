@@ -6,79 +6,68 @@
 /*   By: dyahorau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/15 16:38:06 by dyahorau          #+#    #+#             */
-/*   Updated: 2019/03/23 21:42:36 by dyahorau         ###   ########.fr       */
+/*   Updated: 2019/03/29 17:41:24 by dyahorau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static char		*one_word(char const *s, char c, int i)
+static size_t	word_count(char *str, char c)
 {
-	int			i2;
-	char		*word;
+	int		i;
+	int		count;
 
-	i2 = i;
-	while (s[i] && s[i] != c)
-		i++;
-	word = (char *)malloc(sizeof(char) * (i - i2 + 1));
 	i = 0;
-	while (s[i2] && s[i2] != c)
+	count = 0;
+	while (str[i] != '\0')
 	{
-		word[i] = s[i2];
+		if (str[i] != c && str[i + 1] == c)
+			count++;
+		if (str[i] != c && str[i + 1] == '\0')
+			count++;
 		i++;
-		i2++;
 	}
-	word[i] = '\0';
-	return (word);
+	return (count);
 }
 
-static int		countstr(char const *s, char c)
+static int		word_len(char *str, int i, char c)
 {
-	int			i;
-	int			ct;
+	int		len;
 
-	i = 0;
-	ct = 0;
-	while (s[i] == c)
-		i++;
-	while (s[i] != '\0')
+	len = 0;
+	while (str[i] != c && str[i] != 0)
 	{
-		if (s[i] == c)
-			i++;
-		else
-		{
-			ct++;
-			while (s[i] != c)
-				i++;
-		}
+		len++;
+		i++;
 	}
-	return (ct);
+	return (len);
 }
 
 char			**ft_strsplit(char const *s, char c)
 {
-	int			word_count;
-	int			array_ind;
-	int			i;
-	char		**array;
+	int					i;
+	char				**arr;
+	unsigned int		j;
+	int					k;
 
-	if (!s)
+	if (s == NULL)
 		return (NULL);
-	word_count = countstr(s, c);
-	array_ind = 0;
+	if (!(arr = (char **)malloc(sizeof(char *) * word_count((char *)s, c) + 1)))
+		return (NULL);
 	i = 0;
-	array = (char **)malloc(sizeof(char *) * (word_count + 1));
-	if (!array)
-		return (NULL);
-	while (s[i] && array_ind < word_count)
+	j = 0;
+	while (j < word_count((char *)s, c))
 	{
-		while (s[i] == c && s[i])
-			i++;
-		array[array_ind] = one_word(s, c, i);
-		array_ind++;
-		while (s[i] != c && s[i])
-			i++;
+		if (s[i] != c)
+		{
+			arr[j] = ft_strnew(word_len((char *)s, i, c));
+			k = 0;
+			while (s[i] != c && s[i] != 0)
+				arr[j][k++] = s[i++];
+			arr[j++][k] = '\0';
+		}
+		i++;
 	}
-	array[array_ind] = 0;
-	return (array);
+	arr[word_count((char *)s, c)] = 0;
+	return (arr);
 }
